@@ -22,3 +22,14 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Build oci image
+      run: |
+        # new login with new container registry url and PAT
+        echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+        # new container registry urls added
+        # docker pull ghcr.io/github/longwuyuan/spring:latest
+        docker build . --tag ghcr.io/github/longwuyuan/spring:$GITHUB_SHA --cache-from ghcr.io/github/longwuyuan/spring:latest
+    - name: Push oci image to ghcr.io
+      run: docker push ghcr.io/github/longwuyuan/spring:$GITHUB_SHA
+
+
